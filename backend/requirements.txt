@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+motor
+pymongo
+dnspython
+pydantic
+python-dotenv
+openai
+httpx
+Pillow
+firebase-admin
