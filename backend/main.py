@@ -29,15 +29,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 try:
-    from backend.database import (
-        create_indexes,
-        needs_collection,
-        volunteers_collection,
-        tasks_collection,
-        interests_collection,
-        completions_collection,
-    )
-except ImportError:
     from database import (
         create_indexes,
         needs_collection,
@@ -46,22 +37,47 @@ except ImportError:
         interests_collection,
         completions_collection,
     )
-from backend.schemas import (
-    MatchRequest,
-    MatchResponse,
-    NeedRequest,
-    NeedResponse,
-    OCRRequest,
-    OCRResponse,
-    ScoreRequest,
-    ScoreResponse,
-    VolunteerRequest,
-    VolunteerResponse,
-)
-import backend.scoring as scoring_engine
-from backend.scoring import calculate_urgency_score
-import backend.matching as matching_engine
-from backend.matching import compute_match_metrics
+    from schemas import (
+        MatchRequest,
+        MatchResponse,
+        NeedRequest,
+        NeedResponse,
+        OCRRequest,
+        OCRResponse,
+        ScoreRequest,
+        ScoreResponse,
+        VolunteerRequest,
+        VolunteerResponse,
+    )
+    import scoring as scoring_engine
+    from scoring import calculate_urgency_score
+    import matching as matching_engine
+    from matching import compute_match_metrics
+except ImportError:
+    from backend.database import (
+        create_indexes,
+        needs_collection,
+        volunteers_collection,
+        tasks_collection,
+        interests_collection,
+        completions_collection,
+    )
+    from backend.schemas import (
+        MatchRequest,
+        MatchResponse,
+        NeedRequest,
+        NeedResponse,
+        OCRRequest,
+        OCRResponse,
+        ScoreRequest,
+        ScoreResponse,
+        VolunteerRequest,
+        VolunteerResponse,
+    )
+    import backend.scoring as scoring_engine
+    from backend.scoring import calculate_urgency_score
+    import backend.matching as matching_engine
+    from backend.matching import compute_match_metrics
 
 GEOCODING_REGION_ANCHOR = ", Mira Bhayandar, Maharashtra, India"
 
@@ -650,7 +666,7 @@ async def delete_need(need_id: str, request: Request) -> dict:
     """
     from bson import ObjectId
     from bson.errors import InvalidId
-    from backend.database import interests_collection
+    from database import interests_collection
 
     try:
         oid = ObjectId(need_id)
@@ -703,7 +719,7 @@ async def resolve_need(need_id: str, request: Request) -> dict:
     """
     from bson import ObjectId
     from bson.errors import InvalidId
-    from backend.database import completions_collection
+    from database import completions_collection
 
     try:
         oid = ObjectId(need_id)
@@ -778,7 +794,7 @@ async def withdraw_from_need(need_id: str, request: Request) -> dict:
     """
     from bson import ObjectId
     from bson.errors import InvalidId
-    from backend.database import interests_collection
+    from database import interests_collection
 
     try:
         oid = ObjectId(need_id)
@@ -893,7 +909,7 @@ async def list_volunteers_admin() -> dict:
         volunteers.append(d)
         
     # Attribute completion counts from completions_collection
-    from backend.database import completions_collection
+    from database import completions_collection
     
     # Aggregation to get count per volunteer
     pipeline = [
@@ -1122,7 +1138,7 @@ async def create_interest(payload: InterestRequest) -> dict:
     from bson import ObjectId
     from bson.errors import InvalidId
     from pymongo import ReturnDocument
-    from backend.database import interests_collection, needs_collection
+    from database import interests_collection, needs_collection
 
     # ── Validate ObjectId ────────────────────────────────────────────────
     try:
@@ -1328,7 +1344,7 @@ async def list_my_tasks(request: Request) -> dict:
 @app.get("/api/interests")
 async def list_interests(need_id: str = Query(...)) -> dict:
     """Return all interest records for a given need_id, enriched with volunteer profile."""
-    from backend.database import interests_collection
+    from database import interests_collection
     cursor = interests_collection.find({"need_id": need_id})
     docs = []
     async for doc in cursor:
@@ -1354,7 +1370,7 @@ async def update_interest(interest_id: str, body: dict) -> dict:
     """Accept or reject a volunteer interest. Also updates the need status on acceptance."""
     from bson import ObjectId
     from bson.errors import InvalidId
-    from backend.database import interests_collection
+    from database import interests_collection
 
     try:
         oid = ObjectId(interest_id)
@@ -1402,7 +1418,7 @@ class CompletionRequest(BaseModel):
 @app.post("/api/completions")
 async def create_completions(request: Request, payload: CompletionRequest) -> dict:
     from bson import ObjectId
-    from backend.database import needs_collection, completions_collection
+    from database import needs_collection, completions_collection
     
     requester_uid = _get_token_uid(request)
     

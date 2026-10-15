@@ -10,8 +10,12 @@ import math
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from backend.database import needs_collection, volunteers_collection
-from backend.schemas import MatchRequest, MatchResponse, VolunteerMatch
+try:
+    from database import needs_collection, volunteers_collection
+    from schemas import MatchRequest, MatchResponse, VolunteerMatch
+except ImportError:
+    from backend.database import needs_collection, volunteers_collection
+    from backend.schemas import MatchRequest, MatchResponse, VolunteerMatch
 
 
 # ---------------------------------------------------------------------------

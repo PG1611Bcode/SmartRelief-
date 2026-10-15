@@ -8,7 +8,10 @@ from __future__ import annotations
 import re
 from typing import Literal
 
-from backend.schemas import ScoreRequest, ScoreResponse
+try:
+    from schemas import ScoreRequest, ScoreResponse
+except ImportError:
+    from backend.schemas import ScoreRequest, ScoreResponse
 
 # ---------------------------------------------------------------------------
 # Keyword registry
