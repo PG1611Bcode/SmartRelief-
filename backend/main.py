@@ -53,7 +53,9 @@ try:
     from scoring import calculate_urgency_score
     import matching as matching_engine
     from matching import compute_match_metrics
-except ImportError:
+except ModuleNotFoundError as e:
+    if getattr(e, "name", None) not in ("database", "schemas", "scoring", "matching"):
+        raise
     from backend.database import (
         create_indexes,
         needs_collection,
