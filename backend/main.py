@@ -7,6 +7,13 @@ Start with:
 
 from __future__ import annotations
 
+import sys
+import os
+
+# Inject parent directory into sys.path so 'backend' package is resolvable in Vercel serverless environment
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Any
@@ -20,17 +27,6 @@ from fastapi import FastAPI, HTTPException, Query, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-
-import sys
-import os
-
-# Ensure parent directory is in sys.path so 'backend.*' imports succeed in both root and backend cwd
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_parent_dir = os.path.dirname(_current_dir)
-if _parent_dir not in sys.path:
-    sys.path.insert(0, _parent_dir)
-if _current_dir not in sys.path:
-    sys.path.insert(0, _current_dir)
 
 try:
     from backend.database import (
